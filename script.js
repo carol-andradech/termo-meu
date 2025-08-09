@@ -1,134 +1,99 @@
-//----------------------------------//
-// Configurações básicas do jogo
-//----------------------------------//
+// Configurações do jogo
+const palavraDoDia = "BEIJO"; // Palavra a ser adivinhada
+const maxTentativas = 6; // Número máximo de tentativas
 
-// Palavra secreta que o jogador deve descobrir
-const palavraDoDia = "CANTO";
-// Quantidade máxima de tentativas (linhas do tabuleiro)
-const maxTentativas = 6;
+// Estado do jogo
+let tentativaAtual = 0; // Tentativa atual (0 a 5)
+let posicaoAtual = 0; // Posição atual da letra sendo digitada (0 a 4)
 
-// Em qual tentativa (linha) o jogador está atualmente
-let tentativaAtual = 0;
+// Elementos da interface
+const board = document.getElementById("board"); // Tabuleiro de letras
+const message = document.getElementById("message"); // Área de mensagens
+const keyboard = document.getElementById("keyboard"); // Teclado virtual
 
-// Em qual posição (coluna da linha) estamos digitando no momento
-// Pode valer de 0 até palavraLength (quando essa linha estiver cheia)
-let posicaoAtual = 0;
+// Configurações da palavra
+const palavraLength = palavraDoDia.length; // Tamanho da palavra (5)
+const letrasValidas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); // Letras permitidas
 
-//----------------------------------//
-// Pegando elementos do HTML na tela
-//----------------------------------//
-
-// Div do tabuleiro — onde os quadradinhos das letras aparecem
-const board = document.getElementById("board");
-// Div de mensagens — onde mostramos "palavra incompleta" ou "parabéns" etc
-const message = document.getElementById("message");
-// Div do teclado virtual
-const keyboard = document.getElementById("keyboard");
-
-// Quantidade de letras da palavra secreta (ex: 5 do "CANTO")
-const palavraLength = palavraDoDia.length;
-
-// Array com todas as letras que consideramos como válidas para digitar
-const letrasValidas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-
-//----------------------------------//
-// Estrutura do teclado virtual
-//----------------------------------//
-
-// Dividimos em 3 linhas, como no site Original
+// Layout do teclado (igual ao Termo/Wordle)
 const linhasTeclado = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Backspace"],
   ["Z", "X", "C", "V", "B", "N", "M", "Enter"],
 ];
 
-//----------------------------------//
-// Criação do tabuleiro visual (divs)
-//----------------------------------//
+/** Cria o tabuleiro de letras */
 function criarTabuleiro() {
-  board.innerHTML = ""; // limpa qualquer coisa dentro do #board
+  board.innerHTML = ""; // Limpa o tabuleiro
 
-  // Criamos (maxTentativas × palavraLength) quadrados
+  // Cria 30 quadrados (6 tentativas * 5 letras)
   for (let i = 0; i < maxTentativas * palavraLength; i++) {
-    // Cria uma nova div (quadrado)
     const tile = document.createElement("div");
-    tile.classList.add("tile"); // adiciona classe CSS .tile
-    tile.setAttribute("id", `tile-${i}`); // dá um id único: tile-0, tile-1, ...
+    tile.classList.add("tile"); // Estilo básico do quadrado
+    tile.setAttribute("id", `tile-${i}`); // ID único
 
-    // Adiciona evento de clique:
-    // se clicarmos num quadrado da linha atual, vamos mover o "cursor" para ele
+    // Permite clicar no quadrado para selecionar posição
     tile.addEventListener("click", () => {
+      // Só permite seleção na linha atual
       if (Math.floor(i / palavraLength) === tentativaAtual) {
-        posicaoAtual = i % palavraLength; // coluna = resto da divisão
-        destacarQuadradoSelecionado(); // mostra contorno laranja
+        posicaoAtual = i % palavraLength;
+        destacarQuadradoSelecionado(); // Atualiza destaque
       }
     });
 
-    board.appendChild(tile); // adiciona o quadradinho na tela
+    board.appendChild(tile);
   }
 
-  // inicializa o cursor (contorno) na primeira posição da primeira linha
-  posicaoAtual = 0;
-  destacarQuadradoSelecionado();
+  posicaoAtual = 0; // Começa na primeira posição
+  destacarQuadradoSelecionado(); // Destaca o quadrado inicial
 }
 
-//----------------------------------//
-// Criação do teclado virtual na tela
-//----------------------------------//
+/** Cria o teclado virtual */
 function criarTeclado() {
-  keyboard.innerHTML = ""; // limpa
+  keyboard.innerHTML = ""; // Limpa o teclado
 
+  // Cria cada linha do teclado
   linhasTeclado.forEach((linha) => {
     const linhaDiv = document.createElement("div");
-    linhaDiv.classList.add("keyboard-row"); // agrupa os botões da linha
+    linhaDiv.classList.add("keyboard-row"); // Container de linha
 
+    // Cria os botões para cada tecla
     linha.forEach((tecla) => {
       const button = document.createElement("button");
 
-      // Define o texto do botão
-      // - Backspace vira ícone ⌫
-      // - Enter vira palavra ENTER
-      // - Caso contrário, mostra a letra
+      // Define texto exibido (especiais têm ícones)
       button.textContent =
         tecla === "Backspace" ? "⌫" : tecla === "Enter" ? "ENTER" : tecla;
 
-      button.classList.add("key"); // estilo padrão de tecla
+      button.classList.add("key"); // Estilo básico
 
-      // Deixa a tecla mais larga se for especial
+      // Teclas especiais são mais largas
       if (tecla === "Backspace" || tecla === "Enter") {
         button.classList.add("wide");
       }
 
-      // Define o id do botão ex: key-a, key-q, key-enter
-      button.setAttribute("id", `key-${tecla.toLowerCase()}`);
-
-      // Quando clicamos na tecla, enviamos o valor dela para handleKey()
-      button.addEventListener("click", () => handleKey(tecla));
-
+      button.setAttribute("id", `key-${tecla.toLowerCase()}`); // ID baseado na tecla
+      button.addEventListener("click", () => handleKey(tecla)); // Evento de clique
       linhaDiv.appendChild(button);
     });
 
-    keyboard.appendChild(linhaDiv); // adiciona a linha ao teclado completo
+    keyboard.appendChild(linhaDiv);
   });
 }
 
-//----------------------------------//
-// Exibe uma mensagem na parte inferior
-//----------------------------------//
+/** Exibe mensagens temporárias na interface */
 function mostrarMensagem(texto, duracao = 3000) {
-  message.textContent = texto; // mostra o texto
+  message.textContent = texto;
   if (duracao > 0) {
     setTimeout(() => {
-      message.textContent = ""; // limpa depois de alguns segundos
+      message.textContent = ""; // Limpa após o tempo definido
     }, duracao);
   }
 }
 
-//----------------------------------//
-// Mostra o contorno laranja no quadrado selecionado
-//----------------------------------//
+/** Destaca o quadrado atual na linha de tentativa */
 function destacarQuadradoSelecionado() {
-  // Primeiro remove contorno da linha inteira
+  // Remove destaque de todos os quadrados da linha atual
   for (
     let i = tentativaAtual * palavraLength;
     i < (tentativaAtual + 1) * palavraLength;
@@ -137,36 +102,36 @@ function destacarQuadradoSelecionado() {
     board.children[i].style.outline = "none";
   }
 
-  // Se a posição atual for válida, coloca o contorno
+  // Destaca apenas o quadrado atual (se estiver dentro dos limites)
   if (posicaoAtual >= 0 && posicaoAtual < palavraLength) {
     const atual = board.children[tentativaAtual * palavraLength + posicaoAtual];
-    atual.style.outline = "2px solid #FF894F";
+    if (atual) {
+      atual.style.outline = "2px solid #FF894F"; // Borda laranja
+    }
   }
 }
 
-//----------------------------------//
-// Quando o usuário aperta uma tecla (mouse ou teclado físico)
-//----------------------------------//
+/** Processa as ações das teclas */
 function handleKey(key) {
-  // Se já acabou o jogo, não faz nada
+  // Impede ação após o fim do jogo
   if (tentativaAtual >= maxTentativas) return;
 
-  // Se apertou BACKSPACE → apagar a letra da posição anterior
+  // Tecla Backspace (apagar)
   if (key.toLowerCase() === "backspace") {
     if (posicaoAtual > 0) {
       posicaoAtual--;
       const tile =
         board.children[tentativaAtual * palavraLength + posicaoAtual];
-      tile.textContent = ""; // apaga a letra
-      tile.classList.remove("filled"); // remove estilo de preenchido
-      destacarQuadradoSelecionado();
+      tile.textContent = ""; // Remove letra
+      tile.classList.remove("filled"); // Remove estilo
+      destacarQuadradoSelecionado(); // Atualiza seleção
     }
     return;
   }
 
-  // Se apertou ENTER → avalia a linha inteira
+  // Tecla Enter (enviar tentativa)
   if (key.toLowerCase() === "enter") {
-    // Verifica se todos os quadrados da linha estão preenchidos
+    // Verifica se a palavra está completa
     let completa = true;
     for (
       let i = tentativaAtual * palavraLength;
@@ -178,12 +143,14 @@ function handleKey(key) {
         break;
       }
     }
+
+    // Alerta se incompleta
     if (!completa) {
       mostrarMensagem("Palavra incompleta!");
       return;
     }
 
-    // Monta a string com a tentativa do usuário
+    // Constrói a palavra da tentativa
     let tentativa = "";
     for (
       let i = tentativaAtual * palavraLength;
@@ -192,122 +159,124 @@ function handleKey(key) {
     ) {
       tentativa += board.children[i].textContent;
     }
-    tentativa = tentativa.toUpperCase();
+    tentativa = tentativa.toUpperCase(); // Padroniza
 
-    // Chama a função que compara com a palavra do dia
+    // Avalia a tentativa
     avaliarTentativa(tentativa);
     return;
   }
 
-  // Se for uma letra de A-Z → coloca na posição atual
+  // Teclas de letra (A-Z)
   if (letrasValidas.includes(key.toUpperCase())) {
+    // Só adiciona se houver espaço na palavra
     if (posicaoAtual < palavraLength) {
       const tile =
         board.children[tentativaAtual * palavraLength + posicaoAtual];
-      tile.textContent = key.toUpperCase(); // escreve a letra no quadrado
-      tile.classList.add("filled"); // marca visualmente como preenchido
-      posicaoAtual++; // vai para o próximo quadrado
+      tile.textContent = key.toUpperCase(); // Insere letra
+      tile.classList.add("filled"); // Adiciona estilo
+      posicaoAtual++; // Avança posição
 
-      // se passou do último quadrado, marcamos posição fora da linha
+      // Remove destaque se chegar no final
       if (posicaoAtual > palavraLength - 1) {
         posicaoAtual = palavraLength;
       }
-      destacarQuadradoSelecionado();
+      destacarQuadradoSelecionado(); // Atualiza seleção
     }
   }
 }
 
-//----------------------------------//
-// Compara a tentativa do jogador com a palavra secreta
-//----------------------------------//
+/** Avalia a palavra submetida contra a palavra do dia */
 function avaliarTentativa(tentativa) {
-  const letrasPalavra = palavraDoDia.split(""); // ["C","A","N","T","O"]
-  const resultado = Array(palavraLength).fill("absent"); // ["absent","absent",...]
-  const letrasContadas = {}; // controla quantas vezes já marcou uma letra
+  const letrasPalavra = palavraDoDia.split("");
+  // Inicializa todos como ausentes (cinza)
+  const resultado = Array(palavraLength).fill("absent");
+  const letrasContadas = {}; // Controla letras já verificadas
 
-  // 1º passo: marca como 'correct' (verde) as letras na posição certa
+  // 1ª passada: Verifica letras corretas (posição certa)
   for (let i = 0; i < palavraLength; i++) {
     if (tentativa[i] === letrasPalavra[i]) {
-      resultado[i] = "correct";
+      resultado[i] = "correct"; // Verde
       letrasContadas[tentativa[i]] = (letrasContadas[tentativa[i]] || 0) + 1;
     }
   }
 
-  // 2º passo: marca como 'present' (amarelo) letras existentes mas em posição errada
+  // 2ª passada: Verifica letras presentes (posição errada)
   for (let i = 0; i < palavraLength; i++) {
+    // Ignora já corretas
     if (resultado[i] === "correct") continue;
+
     if (letrasPalavra.includes(tentativa[i])) {
       const totalNaPalavra = letrasPalavra.filter(
         (l) => l === tentativa[i]
       ).length;
       const usadas = letrasContadas[tentativa[i]] || 0;
+
+      // Se ainda há ocorrências não descobertas
       if (usadas < totalNaPalavra) {
-        resultado[i] = "present";
+        resultado[i] = "present"; // Amarelo
         letrasContadas[tentativa[i]] = usadas + 1;
       }
     }
   }
 
-  // 3º passo: aplica as classes no DOM para colorir
+  // Aplica cores nos quadrados
   for (let i = 0; i < palavraLength; i++) {
     const tile = document.getElementById(
       `tile-${tentativaAtual * palavraLength + i}`
     );
-    tile.classList.add(resultado[i]); // adiciona .correct, .present ou .absent
+    tile.classList.add(resultado[i]); // Adiciona classe de cor
   }
 
-  // pinta o teclado virtual também
+  // Atualiza cores do teclado
   atualizarTeclado(tentativa, resultado);
 
-  // Se acertou a palavra, termina o jogo
+  // Vitória: Acertou a palavra
   if (tentativa === palavraDoDia) {
     mostrarMensagem("Parabéns! Você acertou a palavra!", 5000);
-    tentativaAtual = maxTentativas;
+    tentativaAtual = maxTentativas; // Bloqueia novas tentativas
     return;
   }
 
-  // Senão vai para a próxima linha
-  tentativaAtual++;
-  posicaoAtual = 0;
+  tentativaAtual++; // Passa para próxima tentativa
+  posicaoAtual = 0; // Reinicia posição
 
-  // Se usou todas as tentativas
+  // Derrota: Esgotou tentativas
   if (tentativaAtual === maxTentativas) {
     mostrarMensagem(`Fim de jogo! A palavra era: ${palavraDoDia}`, 5000);
   }
 
-  destacarQuadradoSelecionado();
+  destacarQuadradoSelecionado(); // Atualiza destaque
 }
 
-//----------------------------------//
-// Atualiza as cores das teclas do teclado virtual
-//----------------------------------//
+/** Atualiza as cores das teclas do teclado virtual */
 function atualizarTeclado(tentativa, resultado) {
   for (let i = 0; i < tentativa.length; i++) {
     const keyBtn = document.getElementById(`key-${tentativa[i].toLowerCase()}`);
     if (!keyBtn) continue;
 
+    // Prioridade: correct > present > absent
     if (resultado[i] === "correct") {
       keyBtn.classList.remove("present", "absent");
-      keyBtn.classList.add("correct");
+      keyBtn.classList.add("correct"); // Verde
     } else if (resultado[i] === "present") {
+      // Não sobrescreve teclas já marcadas como corretas
       if (!keyBtn.classList.contains("correct")) {
         keyBtn.classList.remove("absent");
-        keyBtn.classList.add("present");
+        keyBtn.classList.add("present"); // Amarelo
       }
     } else {
+      // Só marca como ausente se não tiver status melhor
       if (
         !keyBtn.classList.contains("correct") &&
         !keyBtn.classList.contains("present")
       ) {
-        keyBtn.classList.add("absent");
+        keyBtn.classList.add("absent"); // Cinza
       }
     }
   }
 }
 
-//----------------------------------//
-// Permite usar o teclado do computador também
-//----------------------------------//
+// Eventos de teclado físico
 window.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     handleKey("Enter");
@@ -321,8 +290,6 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-//----------------------------------//
-// Inicializa tudo quando a página carrega
-//----------------------------------//
+// Inicialização do jogo
 criarTabuleiro();
 criarTeclado();

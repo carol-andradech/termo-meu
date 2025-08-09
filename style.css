@@ -1,7 +1,17 @@
-/* CSS */
+@import url("https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&display=swap");
 body {
   font-family: Arial, sans-serif;
-  background: #121213;
+  background: repeating-linear-gradient(
+    90deg,
+    /* direção: 0° = vertical, 90° = horizontal */ #a19ad3,
+    /* cor 1 */ #a19ad3 25%,
+    /* até 25% */ #a1d6cb 25%,
+    /* cor 2 começa aqui */ #a1d6cb 50%,
+    /* até 50% */ #fff574 50%,
+    /* cor 3 */ #fff574 75%,
+    #ff8383 75%,
+    /* cor 4 */ #ff8383 100%
+  );
   color: white;
   display: flex;
   flex-direction: column;
@@ -14,6 +24,14 @@ body {
 
 h1 {
   margin-bottom: 10px;
+  color: black;
+  font-family: "Playwrite AU QLD", cursive;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 #board {
@@ -43,14 +61,14 @@ h1 {
 }
 
 .correct {
-  background-color: #538d4e !important;
-  border-color: #538d4e !important;
+  background-color: #64e2b7 !important;
+  border-color: #64e2b7 !important;
   color: white;
 }
 
 .present {
-  background-color: #b59f3b !important;
-  border-color: #b59f3b !important;
+  background-color: #ffcb61 !important;
+  border-color: #ffcb61 !important;
   color: white;
 }
 
@@ -60,57 +78,6 @@ h1 {
   color: white;
 }
 
-#keyboard {
-  display: grid;
-  grid-template-columns: repeat(10, 35px);
-  grid-gap: 5px;
-  justify-content: center;
-  margin-bottom: 10px;
-}
-
-.key {
-  height: 45px;
-  background-color: #818384;
-  border-radius: 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-weight: 700;
-  color: white;
-  text-transform: uppercase;
-  user-select: none;
-  border: none;
-  transition: background-color 0.2s;
-  font-size: 14px;
-}
-
-.key.wide {
-  grid-column: span 2;
-}
-
-.key.correct {
-  background-color: #538d4e !important;
-}
-
-.key.present {
-  background-color: #b59f3b !important;
-}
-
-.key.absent {
-  background-color: #3a3a3c !important;
-}
-
-.key:active {
-  filter: brightness(0.8);
-}
-
-#message {
-  min-height: 24px;
-  font-weight: 600;
-  color: #f5b942;
-  margin-top: 5px;
-}
 #keyboard {
   display: flex;
   flex-direction: column;
@@ -148,11 +115,11 @@ h1 {
 }
 
 .key.correct {
-  background-color: #538d4e !important;
+  background-color: #64e2b7 !important;
 }
 
 .key.present {
-  background-color: #b59f3b !important;
+  background-color: #ffcb61 !important;
 }
 
 .key.absent {
@@ -161,4 +128,11 @@ h1 {
 
 .key:active {
   filter: brightness(0.8);
+}
+
+#message {
+  min-height: 24px;
+  font-weight: 600;
+  color: black;
+  margin-top: 5px;
 }
