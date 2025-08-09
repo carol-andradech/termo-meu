@@ -151,8 +151,8 @@ h1 {
 
   #board {
     grid-template-columns: repeat(5, 30px);
-    grid-gap: 1px; /* ainda menos espaçamento */
-    margin-bottom: 6px; /* margem menor */
+    grid-gap: 3px; /* espaçamento leve, pouco maior */
+    margin-bottom: 6px;
   }
 
   .tile {
@@ -162,22 +162,22 @@ h1 {
   }
 
   #keyboard {
-    gap: 3px; /* gap menor entre linhas */
+    gap: 4px; /* gap confortável */
   }
 
   .keyboard-row {
-    gap: 1.5px; /* gap menor entre teclas */
+    gap: 2px; /* espaçamento pequeno entre teclas */
   }
 
   .key {
     height: 38px;
     min-width: 28px;
     font-size: 12px;
-    padding: 0 3px; /* padding mais apertado */
+    padding: 0 4px;
   }
 
   .key.wide {
-    min-width: 48px; /* teclas largas um pouco menores */
+    min-width: 50px;
   }
 
   #message {
