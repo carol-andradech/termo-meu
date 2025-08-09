@@ -106,7 +106,7 @@ function destacarQuadradoSelecionado() {
   if (posicaoAtual >= 0 && posicaoAtual < palavraLength) {
     const atual = board.children[tentativaAtual * palavraLength + posicaoAtual];
     if (atual) {
-      atual.style.outline = "2px solid #FF894F"; // Borda laranja
+      atual.style.outline = "2px solid #cb6734ff"; // Borda laranja
     }
   }
 }
@@ -232,7 +232,8 @@ function avaliarTentativa(tentativa) {
 
   // Vitória: Acertou a palavra
   if (tentativa === palavraDoDia) {
-    mostrarMensagem("Parabéns! Você acertou a palavra!", 5000);
+    mostrarMensagem("Parabéns! Você acertou a palavra!");
+    chuvaDeCoracoes(); // chama a animação
     tentativaAtual = maxTentativas; // Bloqueia novas tentativas
     return;
   }
@@ -289,6 +290,36 @@ window.addEventListener("keydown", (e) => {
     }
   }
 });
+
+function chuvaDeCoracoes() {
+  const numCoracoes = 80; // mais corações para uma chuva intensa
+  for (let i = 0; i < numCoracoes; i++) {
+    const coracao = document.createElement("div");
+    coracao.classList.add("coracao");
+    coracao.textContent = "❤️";
+
+    coracao.style.left = Math.random() * 100 + "vw";
+
+    // duração entre 2 e 5 segundos (mais rápida)
+    coracao.style.animationDuration = 2 + Math.random() * 3 + "s";
+
+    // atraso aleatório até 5s para espalhar bem
+    coracao.style.animationDelay = Math.random() * 5 + "s";
+
+    // tamanhos variados para mais naturalidade (14px a 30px)
+    const tamanho = 14 + Math.random() * 16;
+    coracao.style.fontSize = tamanho + "px";
+
+    // leve variação na opacidade inicial
+    coracao.style.opacity = 0.7 + Math.random() * 0.3;
+
+    document.body.appendChild(coracao);
+
+    coracao.addEventListener("animationend", () => {
+      coracao.remove();
+    });
+  }
+}
 
 // Inicialização do jogo
 criarTabuleiro();
