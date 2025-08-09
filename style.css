@@ -1,75 +1,57 @@
 @import url("https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&display=swap");
 
-* {
-  box-sizing: border-box;
-}
-
 body {
   font-family: Arial, sans-serif;
   background: repeating-linear-gradient(
     90deg,
-    #a19ad3,
-    #a19ad3 25%,
-    #a1d6cb 25%,
-    #a1d6cb 50%,
-    #fff574 50%,
-    #fff574 75%,
+    /* direção: 0° = vertical, 90° = horizontal */ #a19ad3,
+    /* cor 1 */ #a19ad3 25%,
+    /* até 25% */ #a1d6cb 25%,
+    /* cor 2 começa aqui */ #a1d6cb 50%,
+    /* até 50% */ #fff574 50%,
+    /* cor 3 */ #fff574 75%,
     #ff8383 75%,
-    #ff8383 100%
+    /* cor 4 */ #ff8383 100%
   );
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0;
-  padding: 10px;
+  margin: 10px;
   user-select: none;
   min-height: 100vh;
   justify-content: flex-start;
-  overflow-x: hidden;
-}
-
-.container {
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 h1 {
-  margin: 0 0 15px 0;
+  margin-bottom: 10px;
   color: black;
   font-family: "Playwrite AU QLD", cursive;
   font-optical-sizing: auto;
-  font-weight: 600;
+  /* font-weight: <weight>; */ /* Remova ou defina um peso válido, ex: 400 */
+  font-weight: 400;
   font-style: normal;
   background-color: white;
   border-radius: 8px;
   padding: 10px;
-  text-align: center;
-  width: 100%;
-  font-size: 1.8rem;
 }
 
 #board {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 40px);
   grid-gap: 5px;
-  margin-bottom: 15px;
-  width: 100%;
-  max-width: 350px;
+  margin-bottom: 10px;
 }
 
 .tile {
-  aspect-ratio: 1/1; /* Mantém formato quadrado */
-  max-width: 60px;
+  width: 40px;
+  height: 40px;
   border: 2px solid #3a3a3c;
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 24px;
   text-transform: uppercase;
   background-color: #121213;
   color: white;
@@ -104,23 +86,17 @@ h1 {
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
-  width: 100%;
-  max-width: 500px;
 }
 
 .keyboard-row {
   display: flex;
-  gap: 4px;
-  width: 100%;
-  justify-content: center;
+  gap: 6px;
 }
 
 .key {
   height: 45px;
-  min-width: 30px;
-  flex: 1;
-  max-width: 40px;
-  padding: 0 2px;
+  min-width: 35px;
+  padding: 0 8px;
   background-color: #818384;
   border-radius: 4px;
   border: none;
@@ -137,9 +113,7 @@ h1 {
 }
 
 .key.wide {
-  min-width: 50px;
-  max-width: 70px;
-  flex: 1.5;
+  min-width: 70px;
 }
 
 .key.correct {
@@ -162,82 +136,51 @@ h1 {
   min-height: 24px;
   font-weight: 600;
   color: black;
-  margin-top: 10px;
-  text-align: center;
-  padding: 5px 10px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 4px;
-  width: 100%;
-  max-width: 350px;
-  font-size: 1rem;
+  margin-top: 5px;
 }
 
-/* Media Queries para responsividade */
-@media (max-width: 500px) {
+@media (max-width: 480px) {
+  body {
+    margin: 5px;
+  }
+
   h1 {
     font-size: 1.5rem;
     padding: 8px;
   }
 
-  .tile {
-    font-size: 1.3rem;
-    max-width: 50px;
-  }
-
-  .key {
-    height: 40px;
-    min-width: 25px;
-    font-size: 12px;
-  }
-
-  .key.wide {
-    min-width: 40px;
-    max-width: 60px;
-  }
-}
-
-@media (max-width: 400px) {
-  .tile {
-    max-width: 45px;
-    font-size: 1.2rem;
-  }
-
-  .key {
-    height: 35px;
-    min-width: 20px;
-    font-size: 11px;
-  }
-
-  .key.wide {
-    min-width: 35px;
-    max-width: 50px;
-  }
-
   #board {
-    grid-gap: 4px;
+    grid-template-columns: repeat(5, 30px);
+    grid-gap: 2px; /* menos espaçamento */
+    margin-bottom: 8px;
+  }
+
+  .tile {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  #keyboard {
+    gap: 4px; /* menos gap entre linhas */
   }
 
   .keyboard-row {
-    gap: 3px;
-  }
-}
-
-@media (max-height: 600px) {
-  body {
-    padding-top: 5px;
+    gap: 2px; /* menos gap entre teclas */
   }
 
-  h1 {
-    margin-bottom: 8px;
-    font-size: 1.3rem;
+  .key {
+    height: 38px;
+    min-width: 28px;
+    font-size: 12px;
+    padding: 0 4px; /* menos padding horizontal */
   }
 
-  #board {
-    margin-bottom: 8px;
+  .key.wide {
+    min-width: 50px; /* reduzido pra ficar proporcional */
   }
 
-  .tile {
-    max-width: 40px;
-    font-size: 1.1rem;
+  #message {
+    font-size: 14px;
   }
 }
