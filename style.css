@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Playwrite+AU+QLD:wght@100..400&display=swap");
+
 body {
   font-family: Arial, sans-serif;
   background: repeating-linear-gradient(
@@ -27,7 +28,8 @@ h1 {
   color: black;
   font-family: "Playwrite AU QLD", cursive;
   font-optical-sizing: auto;
-  font-weight: <weight>;
+  /* font-weight: <weight>; */ /* Remova ou defina um peso válido, ex: 400 */
+  font-weight: 400;
   font-style: normal;
   background-color: white;
   border-radius: 8px;
@@ -135,4 +137,51 @@ h1 {
   font-weight: 600;
   color: black;
   margin-top: 5px;
+}
+
+/* === Responsividade para mobile === */
+@media (max-width: 480px) {
+  body {
+    margin: 5px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    padding: 8px;
+  }
+
+  #board {
+    grid-template-columns: repeat(5, 30px);
+    grid-gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .tile {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  #keyboard {
+    gap: 6px;
+  }
+
+  .keyboard-row {
+    gap: 4px;
+  }
+
+  .key {
+    height: 38px;
+    min-width: 28px;
+    font-size: 12px;
+    padding: 0 6px;
+  }
+
+  .key.wide {
+    min-width: 55px;
+  }
+
+  #message {
+    font-size: 14px;
+  }
 }
