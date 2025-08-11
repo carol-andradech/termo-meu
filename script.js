@@ -1,21 +1,20 @@
 // Configurações do jogo
-const palavraDoDia = "XUCRO"; // Palavra a ser adivinhada
+const palavraDoDia = "MILHO"; // Palavra a ser adivinhada
 const maxTentativas = 6; // Número máximo de tentativas
 
 // Estado do jogo
-let tentativaAtual = 0; // Tentativa atual (0 a 5)
-let posicaoAtual = 0; // Posição atual da letra sendo digitada (0 a 4)
+let tentativaAtual = 0;
+let posicaoAtual = 0;
+let historicoResultado = []; // guarda o desempenho para compartilhar
 
 // Elementos da interface
-const board = document.getElementById("board"); // Tabuleiro de letras
-const message = document.getElementById("message"); // Área de mensagens
-const keyboard = document.getElementById("keyboard"); // Teclado virtual
+const board = document.getElementById("board");
+const message = document.getElementById("message");
+const keyboard = document.getElementById("keyboard");
 
-// Configurações da palavra
-const palavraLength = palavraDoDia.length; // Tamanho da palavra (5)
-const letrasValidas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); // Letras permitidas
-
-// Layout do teclado (igual ao Termo/Wordle)
+// Configurações
+const palavraLength = palavraDoDia.length;
+const letrasValidas = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const linhasTeclado = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L", "Backspace"],
@@ -24,76 +23,57 @@ const linhasTeclado = [
 
 /** Cria o tabuleiro de letras */
 function criarTabuleiro() {
-  board.innerHTML = ""; // Limpa o tabuleiro
-
-  // Cria 30 quadrados (6 tentativas * 5 letras)
+  board.innerHTML = "";
   for (let i = 0; i < maxTentativas * palavraLength; i++) {
     const tile = document.createElement("div");
-    tile.classList.add("tile"); // Estilo básico do quadrado
-    tile.setAttribute("id", `tile-${i}`); // ID único
-
-    // Permite clicar no quadrado para selecionar posição
+    tile.classList.add("tile");
+    tile.setAttribute("id", `tile-${i}`);
     tile.addEventListener("click", () => {
-      // Só permite seleção na linha atual
       if (Math.floor(i / palavraLength) === tentativaAtual) {
         posicaoAtual = i % palavraLength;
-        destacarQuadradoSelecionado(); // Atualiza destaque
+        destacarQuadradoSelecionado();
       }
     });
-
     board.appendChild(tile);
   }
-
-  posicaoAtual = 0; // Começa na primeira posição
-  destacarQuadradoSelecionado(); // Destaca o quadrado inicial
+  posicaoAtual = 0;
+  destacarQuadradoSelecionado();
 }
 
 /** Cria o teclado virtual */
 function criarTeclado() {
-  keyboard.innerHTML = ""; // Limpa o teclado
-
-  // Cria cada linha do teclado
+  keyboard.innerHTML = "";
   linhasTeclado.forEach((linha) => {
     const linhaDiv = document.createElement("div");
-    linhaDiv.classList.add("keyboard-row"); // Container de linha
-
-    // Cria os botões para cada tecla
+    linhaDiv.classList.add("keyboard-row");
     linha.forEach((tecla) => {
       const button = document.createElement("button");
-
-      // Define texto exibido (especiais têm ícones)
       button.textContent =
         tecla === "Backspace" ? "⌫" : tecla === "Enter" ? "ENTER" : tecla;
-
-      button.classList.add("key"); // Estilo básico
-
-      // Teclas especiais são mais largas
+      button.classList.add("key");
       if (tecla === "Backspace" || tecla === "Enter") {
         button.classList.add("wide");
       }
-
-      button.setAttribute("id", `key-${tecla.toLowerCase()}`); // ID baseado na tecla
-      button.addEventListener("click", () => handleKey(tecla)); // Evento de clique
+      button.setAttribute("id", `key-${tecla.toLowerCase()}`);
+      button.addEventListener("click", () => handleKey(tecla));
       linhaDiv.appendChild(button);
     });
-
     keyboard.appendChild(linhaDiv);
   });
 }
 
-/** Exibe mensagens temporárias na interface */
+/** Mensagem temporária */
 function mostrarMensagem(texto, duracao = 3000) {
   message.textContent = texto;
   if (duracao > 0) {
     setTimeout(() => {
-      message.textContent = ""; // Limpa após o tempo definido
+      message.textContent = "";
     }, duracao);
   }
 }
 
-/** Destaca o quadrado atual na linha de tentativa */
+/** Destaque no quadrado atual */
 function destacarQuadradoSelecionado() {
-  // Remove destaque de todos os quadrados da linha atual
   for (
     let i = tentativaAtual * palavraLength;
     i < (tentativaAtual + 1) * palavraLength;
@@ -101,37 +81,31 @@ function destacarQuadradoSelecionado() {
   ) {
     board.children[i].style.outline = "none";
   }
-
-  // Destaca apenas o quadrado atual (se estiver dentro dos limites)
   if (posicaoAtual >= 0 && posicaoAtual < palavraLength) {
     const atual = board.children[tentativaAtual * palavraLength + posicaoAtual];
     if (atual) {
-      atual.style.outline = "2px solid #cb6734ff"; // Borda laranja
+      atual.style.outline = "2px solid #cb6734ff";
     }
   }
 }
 
-/** Processa as ações das teclas */
+/** Processa teclas */
 function handleKey(key) {
-  // Impede ação após o fim do jogo
   if (tentativaAtual >= maxTentativas) return;
 
-  // Tecla Backspace (apagar)
   if (key.toLowerCase() === "backspace") {
     if (posicaoAtual > 0) {
       posicaoAtual--;
       const tile =
         board.children[tentativaAtual * palavraLength + posicaoAtual];
-      tile.textContent = ""; // Remove letra
-      tile.classList.remove("filled"); // Remove estilo
-      destacarQuadradoSelecionado(); // Atualiza seleção
+      tile.textContent = "";
+      tile.classList.remove("filled");
+      destacarQuadradoSelecionado();
     }
     return;
   }
 
-  // Tecla Enter (enviar tentativa)
   if (key.toLowerCase() === "enter") {
-    // Verifica se a palavra está completa
     let completa = true;
     for (
       let i = tentativaAtual * palavraLength;
@@ -143,14 +117,10 @@ function handleKey(key) {
         break;
       }
     }
-
-    // Alerta se incompleta
     if (!completa) {
       mostrarMensagem("Palavra incompleta!");
       return;
     }
-
-    // Constrói a palavra da tentativa
     let tentativa = "";
     for (
       let i = tentativaAtual * palavraLength;
@@ -159,121 +129,156 @@ function handleKey(key) {
     ) {
       tentativa += board.children[i].textContent;
     }
-    tentativa = tentativa.toUpperCase(); // Padroniza
-
-    // Avalia a tentativa
+    tentativa = tentativa.toUpperCase();
     avaliarTentativa(tentativa);
     return;
   }
 
-  // Teclas de letra (A-Z)
   if (letrasValidas.includes(key.toUpperCase())) {
-    // Só adiciona se houver espaço na palavra
     if (posicaoAtual < palavraLength) {
       const tile =
         board.children[tentativaAtual * palavraLength + posicaoAtual];
-      tile.textContent = key.toUpperCase(); // Insere letra
-      tile.classList.add("filled"); // Adiciona estilo
-      posicaoAtual++; // Avança posição
-
-      // Remove destaque se chegar no final
+      tile.textContent = key.toUpperCase();
+      tile.classList.add("filled");
+      posicaoAtual++;
       if (posicaoAtual > palavraLength - 1) {
         posicaoAtual = palavraLength;
       }
-      destacarQuadradoSelecionado(); // Atualiza seleção
+      destacarQuadradoSelecionado();
     }
   }
 }
 
-/** Avalia a palavra submetida contra a palavra do dia */
+/** Avalia a palavra */
 function avaliarTentativa(tentativa) {
   const letrasPalavra = palavraDoDia.split("");
-  // Inicializa todos como ausentes (cinza)
   const resultado = Array(palavraLength).fill("absent");
-  const letrasContadas = {}; // Controla letras já verificadas
+  const letrasContadas = {};
 
-  // 1ª passada: Verifica letras corretas (posição certa)
+  // corretas
   for (let i = 0; i < palavraLength; i++) {
     if (tentativa[i] === letrasPalavra[i]) {
-      resultado[i] = "correct"; // Verde
+      resultado[i] = "correct";
       letrasContadas[tentativa[i]] = (letrasContadas[tentativa[i]] || 0) + 1;
     }
   }
 
-  // 2ª passada: Verifica letras presentes (posição errada)
+  // presentes
   for (let i = 0; i < palavraLength; i++) {
-    // Ignora já corretas
     if (resultado[i] === "correct") continue;
-
     if (letrasPalavra.includes(tentativa[i])) {
       const totalNaPalavra = letrasPalavra.filter(
         (l) => l === tentativa[i]
       ).length;
       const usadas = letrasContadas[tentativa[i]] || 0;
-
-      // Se ainda há ocorrências não descobertas
       if (usadas < totalNaPalavra) {
-        resultado[i] = "present"; // Amarelo
+        resultado[i] = "present";
         letrasContadas[tentativa[i]] = usadas + 1;
       }
     }
   }
 
-  // Aplica cores nos quadrados
+  // cores no tabuleiro
   for (let i = 0; i < palavraLength; i++) {
     const tile = document.getElementById(
       `tile-${tentativaAtual * palavraLength + i}`
     );
-    tile.classList.add(resultado[i]); // Adiciona classe de cor
+    tile.classList.add(resultado[i]);
   }
 
-  // Atualiza cores do teclado
+  // teclado
   atualizarTeclado(tentativa, resultado);
 
-  // Vitória: Acertou a palavra
+  // Salvar linha para compartilhar
+  const linhaEmoji =
+    resultado
+      .map((r) => (r === "correct" ? "🟩" : r === "present" ? "🟨" : "⬛"))
+      .join("") +
+    " " +
+    tentativa;
+  historicoResultado.push(linhaEmoji);
+
+  // Vitória
   if (tentativa === palavraDoDia) {
     mostrarMensagem("Parabéns! Você acertou a palavra!");
-    chuvaDeCoracoes(); // chama a animação
-    tentativaAtual = maxTentativas; // Bloqueia novas tentativas
+    chuvaDeCoracoes();
+    tentativaAtual = maxTentativas;
+    mostrarResultadoFinal();
     return;
   }
 
-  tentativaAtual++; // Passa para próxima tentativa
-  posicaoAtual = 0; // Reinicia posição
+  tentativaAtual++;
+  posicaoAtual = 0;
 
-  // Derrota: Esgotou tentativas
+  // Derrota
   if (tentativaAtual === maxTentativas) {
     mostrarMensagem(`Fim de jogo! A palavra era: ${palavraDoDia}`, 5000);
+    mostrarResultadoFinal();
   }
 
-  destacarQuadradoSelecionado(); // Atualiza destaque
+  destacarQuadradoSelecionado();
 }
 
-/** Atualiza as cores das teclas do teclado virtual */
+/** Atualiza teclado */
 function atualizarTeclado(tentativa, resultado) {
   for (let i = 0; i < tentativa.length; i++) {
     const keyBtn = document.getElementById(`key-${tentativa[i].toLowerCase()}`);
     if (!keyBtn) continue;
-
-    // Prioridade: correct > present > absent
     if (resultado[i] === "correct") {
       keyBtn.classList.remove("present", "absent");
-      keyBtn.classList.add("correct"); // Verde
+      keyBtn.classList.add("correct");
     } else if (resultado[i] === "present") {
-      // Não sobrescreve teclas já marcadas como corretas
       if (!keyBtn.classList.contains("correct")) {
         keyBtn.classList.remove("absent");
-        keyBtn.classList.add("present"); // Amarelo
+        keyBtn.classList.add("present");
       }
     } else {
-      // Só marca como ausente se não tiver status melhor
       if (
         !keyBtn.classList.contains("correct") &&
         !keyBtn.classList.contains("present")
       ) {
-        keyBtn.classList.add("absent"); // Cinza
+        keyBtn.classList.add("absent");
       }
     }
+  }
+}
+
+/** Mostrar resultado final com botão de copiar */
+function mostrarResultadoFinal() {
+  const textoFinal = historicoResultado.join("\n");
+  const resultadoDiv = document.createElement("div");
+  resultadoDiv.style.marginTop = "15px";
+  resultadoDiv.style.textAlign = "center";
+  resultadoDiv.innerHTML = `
+    <pre style="background:#fff;color:#000;padding:10px;border-radius:6px;white-space:pre-wrap;">${textoFinal}</pre>
+    <button id="copiarBtn" style="margin-top:8px;padding:5px 10px;">📋 Copiar Resultado</button>
+  `;
+  document.body.appendChild(resultadoDiv);
+
+  document.getElementById("copiarBtn").addEventListener("click", () => {
+    navigator.clipboard.writeText(textoFinal).then(() => {
+      mostrarMensagem("Resultado copiado!");
+    });
+  });
+}
+
+/** Animação de corações */
+function chuvaDeCoracoes() {
+  const numCoracoes = 80;
+  for (let i = 0; i < numCoracoes; i++) {
+    const coracao = document.createElement("div");
+    coracao.classList.add("coracao");
+    coracao.textContent = "❤️";
+    coracao.style.left = Math.random() * 100 + "vw";
+    coracao.style.animationDuration = 2 + Math.random() * 3 + "s";
+    coracao.style.animationDelay = Math.random() * 5 + "s";
+    const tamanho = 14 + Math.random() * 16;
+    coracao.style.fontSize = tamanho + "px";
+    coracao.style.opacity = 0.7 + Math.random() * 0.3;
+    document.body.appendChild(coracao);
+    coracao.addEventListener("animationend", () => {
+      coracao.remove();
+    });
   }
 }
 
@@ -291,36 +296,6 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-function chuvaDeCoracoes() {
-  const numCoracoes = 80; // mais corações para uma chuva intensa
-  for (let i = 0; i < numCoracoes; i++) {
-    const coracao = document.createElement("div");
-    coracao.classList.add("coracao");
-    coracao.textContent = "❤️";
-
-    coracao.style.left = Math.random() * 100 + "vw";
-
-    // duração entre 2 e 5 segundos (mais rápida)
-    coracao.style.animationDuration = 2 + Math.random() * 3 + "s";
-
-    // atraso aleatório até 5s para espalhar bem
-    coracao.style.animationDelay = Math.random() * 5 + "s";
-
-    // tamanhos variados para mais naturalidade (14px a 30px)
-    const tamanho = 14 + Math.random() * 16;
-    coracao.style.fontSize = tamanho + "px";
-
-    // leve variação na opacidade inicial
-    coracao.style.opacity = 0.7 + Math.random() * 0.3;
-
-    document.body.appendChild(coracao);
-
-    coracao.addEventListener("animationend", () => {
-      coracao.remove();
-    });
-  }
-}
-
-// Inicialização do jogo
+// Inicializa
 criarTabuleiro();
 criarTeclado();
