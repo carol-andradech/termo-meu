@@ -200,7 +200,7 @@ function avaliarTentativa(tentativa) {
 
   // Vitória
   if (tentativa === palavraDoDia) {
-    mostrarMensagem("Parabéns! Você acertou a palavra!");
+    mostrarMensagem("Parabéns! Você acertou a palavra!", 0); // 0 = sem tempo limite
     chuvaDeCoracoes();
     tentativaAtual = maxTentativas;
     mostrarResultadoFinal();
@@ -212,7 +212,7 @@ function avaliarTentativa(tentativa) {
 
   // Derrota
   if (tentativaAtual === maxTentativas) {
-    mostrarMensagem(`Fim de jogo! A palavra era: ${palavraDoDia}`, 5000);
+    mostrarMensagem(`Fim de jogo! A palavra era: ${palavraDoDia}`, 0); // sem limite
     mostrarResultadoFinal();
   }
 
