@@ -1,5 +1,5 @@
 // Configurações do jogo
-const palavraDoDia = "SAGAZ"; // Palavra a ser adivinhada
+const palavraDoDia = "MONJA"; // Palavra a ser adivinhada
 const maxTentativas = 6; // Número máximo de tentativas
 
 // Estado do jogo
